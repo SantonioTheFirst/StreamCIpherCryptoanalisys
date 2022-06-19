@@ -45,6 +45,19 @@ C = companion_matrix(p, format='bottom')
 
 state = vector(B, (eval(f'x{i}') for i in range(64)))
 
-print(state)
+with open('gammaV5.txt', 'r') as file:
+    gamma = file.read()
 
-print(h)
+equations = []
+
+for i in range(500):
+    state = C * state
+    if gamma[i] == '0':
+        equations.append(h(*(state)))
+    else:
+        equations.append(h_1(*(state)))
+
+I_eq = Ideal(equations)
+GB_eq = I_eq.groebner_basis()
+with open('GB_result.txt', 'w') as file:
+    [file.write(f'{i}\n') for i in GB_eq]
