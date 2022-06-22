@@ -1,12 +1,12 @@
 import re
 import os
 
-VARIANT = 5
+VARIANT = 7
 
 B = BooleanPolynomialRing(64, 'x', 'degrevlex')
 B.inject_variables()
 
-with open(f'filterV{VARIANT}.txt', 'r') as file:
+with open(f'Variants_FilterFunction/V{VARIANT}.txt', 'r') as file:
     f = file.read()
 
 f = re.sub(r'([\_\{\}])', '', f)
@@ -18,7 +18,6 @@ f_1 = f + 1
 I, I_1 = Ideal(f), Ideal(f_1)
 
 print('Ideal done!')
-
 
 if 'GB.txt' and 'GB_1.txt' not in os.listdir():
     GB, GB_1 = I.groebner_basis(), I_1.groebner_basis()
@@ -45,12 +44,14 @@ C = companion_matrix(p, format='bottom')
 
 state = vector(B, (eval(f'x{i}') for i in range(64)))
 
-with open('gammaV5.txt', 'r') as file:
+with open(f'Variants_Gamma/V{VARIANT}.txt', 'r') as file:
     gamma = file.read()
 
 equations = []
 
-for i in range(500):
+print('Equations start')
+
+for i in range(4000):
     state = C * state
     if gamma[i] == '0':
         equations.append(h(*(state)))
@@ -58,6 +59,9 @@ for i in range(500):
         equations.append(h_1(*(state)))
 
 I_eq = Ideal(equations)
+
+print('Ideal equations done!')
+
 GB_eq = I_eq.groebner_basis()
 with open('GB_result.txt', 'w') as file:
     [file.write(f'{i}\n') for i in GB_eq]
